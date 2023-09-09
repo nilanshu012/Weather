@@ -23,12 +23,43 @@ app.post("/city", async (req, res) => {
     "&q=" +
     searchCity +
     "&aqi=yes";
-  console.log(searchUrl);
+//   console.log(searchUrl);
 
   try {
     const result = await axios.get(searchUrl);
-    res.render("index.ejs", { data: result.data });
-    console.log(result.data);
+    const aqi= result.data.current.air_quality['us-epa-index'];
+    let cls= "aqi";
+    cls+=aqi;
+    let category;
+    switch(aqi)
+    {
+        case 1:
+            category="Good";
+        break;
+        case 2:
+            category="Moderate";
+        break;
+        case 3:
+            category="Unhealthy for sensitive group";
+        break;
+        case 4:
+            category="Unhealthy";
+        break;
+        case 5:
+            category="Very Unhealthy";
+        break;
+        case 6:
+            category="Hazardous";
+        break;
+        default:
+            category="";
+        
+    }
+    res.render("index.ejs", { data: result.data,aqiClass:cls,category:category });
+    // console.log(cls);
+    
+     
+
   } catch (error) {
     console.log(error);
     res.render("index.ejs");
